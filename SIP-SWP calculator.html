@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kishore's Mutual Fund Retirement Planner</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background: linear-gradient(to right, #ff9a9e, #fad0c4);
+            color: white;
+            text-align: center;
+        }
+        label, input, button { 
+            display: block; 
+            margin: 10px auto; 
+            width: 80%;
+            max-width: 400px;
+        }
+        input, button {
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+        }
+        input { background: white; }
+        button {
+            background: #ff6b6b;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        button:hover { background: #ff4757; transform: scale(1.05); }
+        #result {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            white-space: pre-wrap;
+            width: 80%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            font-weight: bold;
+        }
+        .instructions {
+            background: rgba(255, 255, 255, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 600px;
+            margin: 20px auto;
+            text-align: left;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <h2>Kishore's Mutual Fund Retirement Planner</h2>
+    
+    <div class="instructions">
+        <h3>How to Use:</h3>
+        <p><strong>Initial Lumpsum Investment:</strong> Enter the amount you are investing as a one-time deposit.</p>
+        <p><strong>Monthly SIP Amount:</strong> Amount you plan to invest every month.</p>
+        <p><strong>Expected Annual Return (%):</strong> The estimated yearly return percentage on your investment.</p>
+        <p><strong>Return Decline per Year:</strong> Enter 4 or 5, as returns generally decrease over time.</p>
+        <p><strong>SIP Increment per Year (%):</strong> Percentage increase in SIP amount yearly.</p>
+        <p><strong>Number of Years for SIP:</strong> Duration for which you plan to invest in SIP.</p>
+        <p><strong>Monthly SWP Amount:</strong> Amount you plan to withdraw monthly during retirement.</p>
+        <p><strong>Number of Years for SWP:</strong> How long you want to withdraw money.</p>
+        <p><strong>SWP Increment per Year (%):</strong> Yearly increase in withdrawal amount.</p>
+    </div>
+    
+    <label>Initial Lumpsum Investment:</label>
+    <input type="number" id="initial_lumpsum">
+    
+    <label>Monthly SIP Amount:</label>
+    <input type="number" id="monthly_sip">
+    
+    <label>Expected Annual Return (%):</label>
+    <input type="number" id="expected_return">
+    
+    <label>Return Decline per Year (4 or 5% only):</label>
+    <input type="number" id="return_decline" min="4" max="5">
+    
+    <label>SIP Increment per Year (%):</label>
+    <input type="number" id="sip_increment">
+    
+    <label>Number of Years for SIP:</label>
+    <input type="number" id="sip_years">
+    
+    <label>Monthly SWP Amount:</label>
+    <input type="number" id="monthly_swp">
+    
+    <label>Number of Years for SWP:</label>
+    <input type="number" id="swp_years">
+    
+    <label>SWP Increment per Year (%):</label>
+    <input type="number" id="swp_increment">
+    
+    <button onclick="calculateSIPSWP()">Calculate</button>
+    
+    <div id="result"></div>
+
+    <script>
+        function calculateSIPSWP() {
+            let corpus = parseFloat(document.getElementById("initial_lumpsum").value);
+            let monthlySIP = parseFloat(document.getElementById("monthly_sip").value);
+            let expectedReturn = parseFloat(document.getElementById("expected_return").value);
+            let returnDecline = parseFloat(document.getElementById("return_decline").value);
+            if (returnDecline !== 4 && returnDecline !== 5) {
+                alert("Please enter either 4 or 5 for Return Decline per Year.");
+                return;
+            }
+            let sipIncrement = parseFloat(document.getElementById("sip_increment").value);
+            let sipYears = parseInt(document.getElementById("sip_years").value);
+            let monthlySWP = parseFloat(document.getElementById("monthly_swp").value);
+            let swpYears = parseInt(document.getElementById("swp_years").value);
+            let swpIncrement = parseFloat(document.getElementById("swp_increment").value);
+            
+            let resultText = "";
+            let monthlyReturn = (expectedReturn / 100) / 12;
+            let declineRate = returnDecline / 100;
+            let sipGrowth = sipIncrement / 100;
+            let swpGrowth = swpIncrement / 100;
+            
+            for (let year = 1; year <= sipYears; year++) {
+                for (let month = 0; month < 12; month++) {
+                    corpus *= (1 + monthlyReturn);
+                    corpus += monthlySIP;
+                }
+                expectedReturn *= (1 - declineRate);
+                monthlyReturn = (expectedReturn / 100) / 12;
+                monthlySIP *= (1 + sipGrowth);
+            }
+            resultText += `Corpus built after ${sipYears} years: ${corpus.toFixed(2)}\n`;
+            
+            let monthsSurvived = 0;
+            monthlyReturn = (expectedReturn / 100) / 12;
+            
+            while (corpus > 0 && monthsSurvived < swpYears * 12) {
+                corpus *= (1 + monthlyReturn);
+                corpus -= monthlySWP;
+                monthsSurvived++;
+                if (monthsSurvived % 12 === 0) {
+                    monthlySWP *= (1 + swpGrowth);
+                }
+            }
+            
+            let years = Math.floor(monthsSurvived / 12);
+            let months = monthsSurvived % 12;
+            if (years < swpYears) {
+                resultText += `Your corpus lasts for only ${years} years ${months} months. You may need to replan as this strategy does not meet your requirement.`;
+            } else {
+                resultText += `Your corpus lasts for ${years} years ${months} months. Remaining corpus: ${corpus.toFixed(2)}`;
+            }
+            
+            document.getElementById("result").innerText = resultText;
+        }
+    </script>
+</body>
+</html>
