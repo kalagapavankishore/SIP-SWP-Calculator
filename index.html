@@ -45,32 +45,10 @@
             font-weight: bold;
             color: black;
         }
-        .instructions {
-            background: rgba(255, 255, 255, 0.3);
-            padding: 15px;
-            border-radius: 10px;
-            width: 80%;
-            max-width: 600px;
-            margin: 20px auto;
-            text-align: left;
-            color: black;
-        }
     </style>
 </head>
 <body>
     <h2>Kishore's Mutual Fund Retirement Planner</h2>
-    
-    <div class="instructions">
-        <h3>How to Use:</h3>
-        <p>This tool helps you plan your retirement by estimating your savings and withdrawals based on mutual fund investments.</p>
-        <h3>Assumptions:</h3>
-        <ul>
-            <li>Returns on investment decrease over time, so we factor in a decline of 3-3.5% per year.</li>
-            <li>SIP contributions increase yearly to keep up with inflation.</li>
-            <li>The final corpus is calculated assuming reinvestment of earnings.</li>
-            <li>SWP continues until the corpus is exhausted or the planned years are completed.</li>
-        </ul>
-    </div>
     
     <label>Initial Lumpsum Investment:</label>
     <input type="number" id="initial_lumpsum">
@@ -119,18 +97,22 @@
             let declineRate = returnDecline / 100;
             let sipGrowth = sipIncrement / 100;
             let swpGrowth = swpIncrement / 100;
+            let totalInvested = 0;
             
             for (let year = 1; year <= sipYears; year++) {
                 for (let month = 0; month < 12; month++) {
                     corpus *= (1 + monthlyReturn);
                     corpus += monthlySIP;
+                    totalInvested += monthlySIP;
                 }
                 expectedReturn *= (1 - declineRate);
                 monthlyReturn = (expectedReturn / 100) / 12;
                 monthlySIP *= (1 + sipGrowth);
             }
             
-            let resultText = `Corpus built after ${sipYears} years: ₹${(corpus / 10000000).toFixed(2)} crores\n`;
+            let resultText = `Total Money Invested in SIP: ₹${(totalInvested / 10000000).toFixed(2)} crores\n`;
+            resultText += `Corpus built after ${sipYears} years: ₹${(corpus / 10000000).toFixed(2)} crores\n`;
+            
             let monthsSurvived = 0;
             monthlyReturn = (expectedReturn / 100) / 12;
             
@@ -156,4 +138,3 @@
     </script>
 </body>
 </html>
-
