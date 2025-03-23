@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Kishore's Mutual Fund Retirement Planner</title>
     <style>
         body { 
@@ -110,8 +111,8 @@
                 monthlySIP *= (1 + sipGrowth);
             }
             
-            let resultText = `Total Money Invested in SIP: ₹${(totalInvested / 10000000).toFixed(2)} crores\n`;
-            resultText += `Corpus built after ${sipYears} years: ₹${(corpus / 10000000).toFixed(2)} crores\n`;
+            let resultText = `Total Money Invested in SIP: \u20B9${(totalInvested / 10000000).toFixed(2)} crores\n`;
+            resultText += `Corpus built after ${sipYears} years: \u20B9${(corpus / 10000000).toFixed(2)} crores\n`;
             
             let monthsSurvived = 0;
             monthlyReturn = (expectedReturn / 100) / 12;
@@ -130,7 +131,7 @@
             if (years < swpYears) {
                 resultText += `Your corpus lasts for only ${years} years ${months} months.\n`;
             } else {
-                resultText += `Your corpus lasts for ${years} years ${months} months. Remaining corpus: ₹${(corpus / 10000000).toFixed(2)} crores.`;
+                resultText += `Your corpus lasts for ${years} years ${months} months. Remaining corpus: \u20B9${(corpus / 10000000).toFixed(2)} crores.`;
             }
             
             document.getElementById("result").innerText = resultText;
